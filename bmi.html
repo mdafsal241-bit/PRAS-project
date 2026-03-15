@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRAS — BMI Calculator</title>
+  <link rel="stylesheet" href="css/shared.css">
+  <style>
+    .bmi-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .bmi-calculator { background: var(--white); border-radius: 20px; padding: 36px; border: 1px solid #e2e8f0; }
+    .bmi-calculator h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--navy); margin-bottom: 24px; }
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+    .input-row { display: flex; align-items: center; gap: 0; }
+    .input-row input {
+      flex: 1; padding: 14px 18px;
+      border: 2px solid #e2e8f0; border-right: none;
+      border-radius: 10px 0 0 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 16px; color: var(--navy);
+      background: var(--light); outline: none; transition: all 0.25s;
+    }
+    .input-row input:focus { border-color: var(--teal); background: var(--white); }
+    .unit-badge {
+      padding: 14px 18px; background: var(--navy); color: white;
+      border-radius: 0 10px 10px 0; font-weight: 700; font-size: 14px;
+    }
+    .btn-calc {
+      width: 100%; padding: 15px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--teal), #065f46);
+      color: white; font-size: 16px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s;
+      margin-top: 8px;
+    }
+    .btn-calc:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13,148,136,0.35); }
+    .btn-clear {
+      width: 100%; padding: 13px; border: 2px solid #e2e8f0; border-radius: 12px;
+      background: transparent; color: var(--navy); font-size: 14px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s;
+      margin-top: 10px;
+    }
+    .btn-clear:hover { border-color: var(--error); color: var(--error); }
+
+    .bmi-result-panel { background: var(--white); border-radius: 20px; padding: 36px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+    .result-placeholder {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; color: var(--gray);
+    }
+    .result-placeholder .icon { font-size: 60px; margin-bottom: 16px; opacity: 0.5; }
+    .result-placeholder p { font-size: 15px; }
+
+    .result-display { display: none; flex-direction: column; align-items: center; }
+    .bmi-circle {
+      width: 160px; height: 160px; border-radius: 50%;
+      border: 8px solid var(--teal);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      margin-bottom: 20px; position: relative;
+    }
+    .bmi-num { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700; color: var(--navy); }
+    .bmi-label-small { font-size: 13px; color: var(--gray); font-weight: 600; }
+    .bmi-status {
+      font-size: 22px; font-weight: 700; padding: 10px 28px;
+      border-radius: 100px; margin-bottom: 16px;
+    }
+    .bmi-desc { font-size: 14px; color: var(--gray); text-align: center; line-height: 1.6; max-width: 260px; }
+
+    .bmi-scale { margin-top: 28px; }
+    .bmi-scale h4 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 14px; }
+    .scale-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; margin-bottom: 6px; font-size: 13px; }
+    .scale-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .scale-item span { color: var(--navy); font-weight: 600; flex: 1; }
+    .scale-item small { color: var(--gray); }
+
+    @media (max-width: 768px) { .bmi-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><h2>PRAS <span></span> </h2><p>Health Monitoring System</p></div>
+    <nav class="nav-section">
+      <div class="nav-label">Main</div>
+      <a href="home.html" class="nav-item"><span class="icon">🏠</span> Dashboard</a>
+      <a href="doctor.html" class="nav-item"><span class="icon">👨‍⚕️</span> Doctors</a>
+      <a href="patient.html" class="nav-item"><span class="icon">🧑‍🦽</span> Patients</a>
+      <div class="nav-label">Services</div>
+      <a href="tablet.html" class="nav-item"><span class="icon">💊</span> Medicine Store</a>
+      <a href="bmi.html" class="nav-item active"><span class="icon">⚖️</span> BMI Calculator</a>
+      <a href="child.html" class="nav-item"><span class="icon">👶</span> Child Health</a>
+      <div class="nav-label">Info</div>
+      <a href="about.html" class="nav-item"><span class="icon">ℹ️</span> About Us</a>
+      <a href="feedback.html" class="nav-item"><span class="icon">⭐</span> Reviews</a>
+      <a href="contact.html" class="nav-item"><span class="icon">📞</span> Contact</a>
+    </nav>
+    <div class="sidebar-bottom"><button class="logout-btn" onclick="window.location.href='index.html'">🚪 Sign Out</button></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <h3>BMI Calculator</h3>
+      </div>
+      <div class="user-avatar">A</div>
+    </div>
+    <div class="content">
+      <div class="page-header">
+        <h2>Body Mass Index Calculator</h2>
+        <p>Check your BMI and get personalised health insights</p>
+      </div>
+      <div class="bmi-layout">
+        <div class="bmi-calculator">
+          <h3>Enter Your Measurements</h3>
+          <div class="input-group">
+            <label>Weight</label>
+            <div class="input-row">
+              <input type="number" id="weight" placeholder="e.g. 70">
+              <div class="unit-badge">kg</div>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Height</label>
+            <div class="input-row">
+              <input type="number" id="height" placeholder="e.g. 175">
+              <div class="unit-badge">cm</div>
+            </div>
+          </div>
+          <button class="btn-calc" onclick="calcBMI()">Calculate BMI →</button>
+          <button class="btn-clear" onclick="clearBMI()">Clear</button>
+        </div>
+
+        <div class="bmi-result-panel">
+          <div class="result-placeholder" id="placeholder">
+            <div class="icon">⚖️</div>
+            <p>Enter your weight and height to calculate your BMI</p>
+          </div>
+          <div class="result-display" id="resultDisplay">
+            <div class="bmi-circle" id="bmiCircle">
+              <div class="bmi-num" id="bmiNum">--</div>
+              <div class="bmi-label-small">BMI Score</div>
+            </div>
+            <div class="bmi-status" id="bmiStatus">--</div>
+            <div class="bmi-desc" id="bmiDesc">--</div>
+          </div>
+
+          <div class="bmi-scale">
+            <h4>BMI Reference Scale</h4>
+            <div class="scale-item" style="background:#fef3c7;">
+              <div class="scale-dot" style="background:#f59e0b;"></div>
+              <span>Underweight</span><small>&lt; 18.5</small>
+            </div>
+            <div class="scale-item" style="background:#d1fae5;">
+              <div class="scale-dot" style="background:#16a34a;"></div>
+              <span>Normal Weight</span><small>18.5 – 24.9</small>
+            </div>
+            <div class="scale-item" style="background:#ffedd5;">
+              <div class="scale-dot" style="background:#ea580c;"></div>
+              <span>Overweight</span><small>25 – 39.9</small>
+            </div>
+            <div class="scale-item" style="background:#fee2e2;">
+              <div class="scale-dot" style="background:#dc2626;"></div>
+              <span>Obese</span><small>&ge; 40</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>© 2026 Patient Registratin And Appoinment Scheduling</footer>
+  </div>
+  <script>
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+    function calcBMI() {
+      const w = parseFloat(document.getElementById('weight').value);
+      const h = parseFloat(document.getElementById('height').value);
+      if (!w || !h || w <= 0 || h <= 0) { alert('Please enter valid weight and height'); return; }
+      const bmi = (w / ((h/100)**2)).toFixed(1);
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('resultDisplay').style.display = 'flex';
+      document.getElementById('bmiNum').textContent = bmi;
+      const circle = document.getElementById('bmiCircle');
+      const status = document.getElementById('bmiStatus');
+      const desc = document.getElementById('bmiDesc');
+      if (bmi < 18.5) {
+        circle.style.borderColor = '#f59e0b'; status.textContent = 'Underweight';
+        status.style.cssText = 'background:#fef3c7;color:#92400e;font-size:22px;font-weight:700;padding:10px 28px;border-radius:100px;';
+        desc.textContent = 'Your BMI is below the healthy range. Consider consulting a nutritionist for dietary guidance.';
+      } else if (bmi < 25) {
+        circle.style.borderColor = '#16a34a'; status.textContent = '✓ Normal Weight';
+        status.style.cssText = 'background:#d1fae5;color:#065f46;font-size:22px;font-weight:700;padding:10px 28px;border-radius:100px;';
+        desc.textContent = 'Excellent! Your BMI is in the healthy range. Maintain a balanced diet and regular exercise.';
+      } else if (bmi < 40) {
+        circle.style.borderColor = '#ea580c'; status.textContent = 'Overweight';
+        status.style.cssText = 'background:#ffedd5;color:#7c2d12;font-size:22px;font-weight:700;padding:10px 28px;border-radius:100px;';
+        desc.textContent = 'Your BMI is above the ideal range. Moderate exercise and dietary changes can help.';
+      } else {
+        circle.style.borderColor = '#dc2626'; status.textContent = '⚠ Obese';
+        status.style.cssText = 'background:#fee2e2;color:#7f1d1d;font-size:22px;font-weight:700;padding:10px 28px;border-radius:100px;';
+        desc.textContent = 'Please consult a doctor immediately. Obesity is associated with serious health risks.';
+      }
+    }
+    function clearBMI() {
+      document.getElementById('weight').value = '';
+      document.getElementById('height').value = '';
+      document.getElementById('placeholder').style.display = 'flex';
+      document.getElementById('resultDisplay').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

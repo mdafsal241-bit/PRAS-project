@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRAS — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0a1628;
+      --teal: #0d9488;
+      --teal-light: #14b8a6;
+      --gold: #f59e0b;
+      --cream: #fefce8;
+      --white: #ffffff;
+      --gray: #64748b;
+      --light: #f1f5f9;
+      --error: #ef4444;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* LEFT PANEL */
+    .left-panel {
+      width: 55%;
+      background: linear-gradient(135deg, #0a1628 0%, #0f2040 50%, #0d9488 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px;
+      overflow: hidden;
+    }
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(13,148,136,0.15) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      border-radius: 50%;
+    }
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
+      bottom: -50px; right: -50px;
+      border-radius: 50%;
+    }
+    .grid-overlay {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(13,148,136,0.06) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(13,148,136,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .brand {
+      position: relative; z-index: 2;
+      margin-bottom: 50px;
+    }
+    .brand-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(13,148,136,0.2);
+      border: 1px solid rgba(13,148,136,0.4);
+      padding: 8px 18px; border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .brand-badge span { color: var(--teal-light); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+    .pulse-dot {
+      width: 8px; height: 8px; background: var(--teal-light);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(20,184,166,0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(20,184,166,0); }
+    }
+    .brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px; color: var(--white);
+      line-height: 1.15; margin-bottom: 16px;
+    }
+    .brand h1 span { color: var(--teal-light); }
+    .brand p { color: rgba(255,255,255,0.55); font-size: 16px; line-height: 1.7; max-width: 400px; }
+
+    .features {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .feature-item {
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 16px 20px; border-radius: 12px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+    }
+    .feature-item:hover { background: rgba(13,148,136,0.12); border-color: rgba(13,148,136,0.3); transform: translateX(4px); }
+    .feature-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--teal), #065f46);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .feature-text h4 { color: var(--white); font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .feature-text p { color: rgba(255,255,255,0.45); font-size: 12px; }
+
+    /* RIGHT PANEL */
+    .right-panel {
+      width: 45%;
+      background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      padding: 50px 60px;
+    }
+    .login-box { width: 100%; max-width: 380px; }
+    .login-header { margin-bottom: 36px; }
+    .login-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px; color: var(--navy); margin-bottom: 8px;
+    }
+    .login-header p { color: var(--gray); font-size: 14px; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--navy); margin-bottom: 8px; letter-spacing: 0.3px;
+    }
+    .input-wrap { position: relative; }
+    .input-wrap input {
+      width: 100%; padding: 14px 16px 14px 44px;
+      border: 2px solid #e2e8f0; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px;
+      color: var(--navy); background: var(--light);
+      transition: all 0.25s; outline: none;
+    }
+    .input-wrap input:focus { border-color: var(--teal); background: var(--white); box-shadow: 0 0 0 4px rgba(13,148,136,0.1); }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 17px; color: var(--gray); pointer-events: none;
+    }
+    .toggle-pwd {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--gray);
+      font-size: 17px; padding: 0; width: auto;
+    }
+    .error-msg { color: var(--error); font-size: 12px; margin-top: 6px; min-height: 16px; }
+
+    .forgot { text-align: right; margin-top: -10px; margin-bottom: 20px; }
+    .forgot a { font-size: 13px; color: var(--teal); text-decoration: none; font-weight: 500; }
+
+    .btn-login {
+      width: 100%; padding: 15px; border: none; border-radius: 10px;
+      background: linear-gradient(135deg, var(--teal), #065f46);
+      color: white; font-size: 16px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px;
+    }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13,148,136,0.35); }
+    .btn-login:active { transform: translateY(0); }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0; color: var(--gray); font-size: 13px;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+
+    .btn-signup {
+      width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 10px;
+      background: transparent; color: var(--navy); font-size: 15px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s;
+    }
+    .btn-signup:hover { border-color: var(--teal); color: var(--teal); background: rgba(13,148,136,0.05); }
+    .btn-signup a { text-decoration: none; color: inherit; display: block; }
+
+    .social-row {
+      display: flex; justify-content: center; gap: 14px; margin-top: 24px;
+    }
+    .social-btn {
+      width: 44px; height: 44px; border-radius: 10px;
+      border: 2px solid #e2e8f0; background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.25s; font-size: 18px;
+      text-decoration: none;
+    }
+    .social-btn:hover { border-color: var(--teal); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+    @media (max-width: 768px) {
+      .left-panel { display: none; }
+      .right-panel { width: 100%; padding: 40px 30px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="grid-overlay"></div>
+    <div class="brand">
+      <div class="brand-badge"><div class="pulse-dot"></div><span>Live System</span></div>
+      <h1>Patient<br><span>Health</span><br>Monitoring</h1>
+      <p>Advanced patient care and emergency medical information management, built for modern healthcare facilities.</p>
+    </div>
+    <div class="features">
+      <div class="feature-item">
+        <div class="feature-icon">🏥</div>
+        <div class="feature-text"><h4>Patient Management</h4><p>Complete health records & appointments</p></div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🚨</div>
+        <div class="feature-text"><h4>Emergency Response</h4><p>Real-time  alerts & triage support</p></div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💊</div>
+        <div class="feature-text"><h4>Medicine Catalog</h4><p>Prescriptions, stock & pharmacy management</p></div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">👶</div>
+        <div class="feature-text"><h4>Child Health Tracker</h4><p>Pediatric monitoring & vaccination records</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="login-box">
+      <div class="login-header">
+        <h2>Welcome Back</h2>
+        <p>Sign in to access the PRAS dashboard</p>
+      </div>
+
+      <form id="loginForm" onsubmit="loginHandler(event)" novalidate>
+        <div class="form-group">
+          <label>Username</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" id="user" placeholder="Enter your username" autocomplete="username">
+          </div>
+          <div class="error-msg" id="userError"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="pswrd" placeholder="Enter your password" autocomplete="current-password">
+            <button class="toggle-pwd" type="button" onclick="togglePassword()" id="toggleBtn">👁️</button>
+          </div>
+          <div class="error-msg" id="pwdError"></div>
+        </div>
+
+        <div class="forgot"><a href="#">Forgot password?</a></div>
+
+        <button class="btn-login" type="submit">Sign In to Dashboard →</button>
+      </form>
+
+      <div class="divider">or</div>
+      <button class="btn-signup"><a href="sign.html">Create New Account</a></button>
+
+      <div class="social-row">
+        <a class="social-btn" href="#">G</a>
+        <a class="social-btn" href="#">f</a>
+        <a class="social-btn" href="#">𝕏</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loginHandler(e) {
+      e.preventDefault();
+      const username = document.getElementById("user");
+      const password = document.getElementById("pswrd");
+      document.getElementById("userError").textContent = "";
+      document.getElementById("pwdError").textContent = "";
+
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      let valid = true;
+
+      if (!username.value.trim()) { document.getElementById("userError").textContent = "Username is required"; valid = false; }
+      if (!password.value.trim()) { document.getElementById("pwdError").textContent = "Password is required"; valid = false; }
+      if (!valid) return;
+
+      if (users.length === 0) { document.getElementById("userError").textContent = "No account found. Please sign up first"; return; }
+
+      let user = users.find(u => u.username === username.value && u.password === password.value);
+      if (user) { window.location.href = "home.html"; }
+      else { document.getElementById("pwdError").textContent = "Invalid username or password"; }
+    }
+    function togglePassword() {
+      const input = document.getElementById("pswrd");
+      input.type = input.type === "password" ? "text" : "password";
+    }
+  </script>
+</body>
+</html>

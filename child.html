@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRAS — Child Health</title>
+  <link rel="stylesheet" href="css/shared.css">
+  <style>
+    .emergency-strip {
+      background: linear-gradient(135deg, #7f1d1d, #991b1b);
+      border-radius: 14px; padding: 16px 24px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .emergency-strip .icon { font-size: 28px; }
+    .emergency-strip h4 { color: white; font-size: 16px; font-weight: 700; }
+    .emergency-strip p { color: rgba(255,255,255,0.7); font-size: 13px; }
+    .emerg-nums { display: flex; gap: 12px; margin-left: auto; flex-wrap: wrap; }
+    .emerg-num {
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px; padding: 8px 16px; text-align: center;
+    }
+    .emerg-num b { color: white; font-size: 18px; display: block; }
+    .emerg-num small { color: rgba(255,255,255,0.6); font-size: 10px; }
+
+    .layout-2col { display: grid; grid-template-columns: 1fr 1.6fr; gap: 24px; }
+    .form-panel { background: var(--white); border-radius: 16px; padding: 28px; border: 1px solid #e2e8f0; }
+    .form-panel h3 { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 22px; display: flex; align-items: center; gap: 8px; }
+    .fg { margin-bottom: 16px; }
+    .fg label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 7px; }
+    .fg input, .fg select {
+      width: 100%; padding: 12px 14px;
+      border: 2px solid #e2e8f0; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--navy);
+      background: var(--light); outline: none; transition: all 0.25s;
+    }
+    .fg input:focus, .fg select:focus { border-color: var(--teal); background: var(--white); }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .btn-save { width: 100%; padding: 14px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--teal), #065f46); color: white; font-size: 15px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s; margin-top: 4px; }
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13,148,136,0.35); }
+
+    .table-panel { background: var(--white); border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+    .table-panel .tp-header { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
+    .table-panel .tp-header h3 { font-size: 17px; font-weight: 700; color: var(--navy); }
+    .count-badge { background: rgba(13,148,136,0.1); color: var(--teal); border: 1px solid rgba(13,148,136,0.25); padding: 4px 12px; border-radius: 100px; font-size: 13px; font-weight: 700; }
+    .empty-state { padding: 50px 24px; text-align: center; color: var(--gray); }
+    .empty-state .icon { font-size: 48px; opacity: 0.4; margin-bottom: 12px; }
+
+    @media (max-width: 900px) { .layout-2col { grid-template-columns: 1fr; } .emerg-nums { margin-left: 0; } }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><h2>PRAS <span></span> </h2><p>Health Monitoring System</p></div>
+    <nav class="nav-section">
+      <div class="nav-label">Main</div>
+      <a href="home.html" class="nav-item"><span class="icon">🏠</span> Dashboard</a>
+      <a href="doctor.html" class="nav-item"><span class="icon">👨‍⚕️</span> Doctors</a>
+      <a href="patient.html" class="nav-item"><span class="icon">🧑‍🦽</span> Patients</a>
+      <div class="nav-label">Services</div>
+      <a href="tablet.html" class="nav-item"><span class="icon">💊</span> Medicine Store</a>
+      <a href="bmi.html" class="nav-item"><span class="icon">⚖️</span> BMI Calculator</a>
+      <a href="child.html" class="nav-item active"><span class="icon">👶</span> Child Health</a>
+      <div class="nav-label">Info</div>
+      <a href="about.html" class="nav-item"><span class="icon">ℹ️</span> About Us</a>
+      <a href="feedback.html" class="nav-item"><span class="icon">⭐</span> Reviews</a>
+      <a href="contact.html" class="nav-item"><span class="icon">📞</span> Contact</a>
+    </nav>
+    <div class="sidebar-bottom"><button class="logout-btn" onclick="window.location.href='index.html'">🚪 Sign Out</button></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <h3>Child Health Tracker</h3>
+      </div>
+      <div class="user-avatar">A</div>
+    </div>
+    <div class="content">
+      <div class="page-header">
+        <h2>Pediatric Health Records</h2>
+        <p>Manage child profiles, health concerns and parent contact information</p>
+      </div>
+
+      <div class="emergency-strip">
+        <div class="icon">🚨</div>
+        <div><h4>Emergency Medical Information</h4><p>24/7 pediatric emergency support available</p></div>
+        <div class="emerg-nums">
+          <div class="emerg-num"><b>108</b><small>Ambulance</small></div>
+          <div class="emerg-num"><b>102</b><small>Mother & Child</small></div>
+          <div class="emerg-num"><b>Apollo Hospital</b><small>Nearest Hospital</small></div>
+        </div>
+      </div>
+
+      <div class="layout-2col">
+        <div class="form-panel">
+          <h3>👶 <span id="formTitle">Add Child Profile</span></h3>
+          <div class="row2">
+            <div class="fg"><label>Child Name</label><input type="text" id="childName" placeholder="Full name"></div>
+            <div class="fg"><label>Age</label><input type="number" id="age" placeholder="Years"></div>
+          </div>
+          <div class="row2">
+            <div class="fg"><label>Gender</label><select id="gender"><option value="">Select</option><option>Male</option><option>Female</option></select></div>
+            <div class="fg"><label>Parent Contact</label><input type="text" id="contact" placeholder="+91 XXXXX XXXXX"></div>
+          </div>
+          <div class="fg"><label>Health Concern</label><input type="text" id="issue" placeholder="e.g. Fever, Cold, Vaccination"></div>
+          <button class="btn-save" onclick="saveChild()" id="saveBtn">Save Child Profile →</button>
+          <button style="width:100%;margin-top:10px;padding:11px;border:2px solid #e2e8f0;border-radius:10px;background:transparent;color:var(--navy);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="cancelEdit()" id="cancelBtn" hidden>Cancel Edit</button>
+        </div>
+
+        <div class="table-panel">
+          <div class="tp-header">
+            <h3>Registered Children</h3>
+            <span class="count-badge" id="countBadge">0 Records</span>
+          </div>
+          <div id="tableContainer">
+            <div class="empty-state"><div class="icon">👶</div><p>No child profiles yet. Add the first one!</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>© 2026 Patient Registratin And Appoinment Scheduling</footer>
+  </div>
+  <script>
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+    let childList = JSON.parse(localStorage.getItem("childData")) || [];
+    let editIndex = -1;
+
+    function saveChild() {
+      const childName = document.getElementById('childName').value.trim();
+      const age = document.getElementById('age').value;
+      const gender = document.getElementById('gender').value;
+      const contact = document.getElementById('contact').value.trim();
+      const issue = document.getElementById('issue').value.trim();
+      if (!childName || !age || !gender || !contact || !issue) { alert("Please fill all fields"); return; }
+      const child = { childName, age, gender, contact, issue };
+      if (editIndex === -1) { childList.push(child); }
+      else { childList[editIndex] = child; editIndex = -1; document.getElementById('formTitle').textContent = 'Add Child Profile'; document.getElementById('cancelBtn').hidden = true; }
+      localStorage.setItem("childData", JSON.stringify(childList));
+      clearForm(); renderTable();
+    }
+
+    function renderTable() {
+      document.getElementById('countBadge').textContent = childList.length + ' Record' + (childList.length !== 1 ? 's' : '');
+      if (childList.length === 0) {
+        document.getElementById('tableContainer').innerHTML = '<div class="empty-state"><div class="icon">👶</div><p>No child profiles yet. Add the first one!</p></div>';
+        return;
+      }
+      document.getElementById('tableContainer').innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Age</th><th>Gender</th><th>Contact</th><th>Concern</th><th>Actions</th></tr></thead>
+            <tbody>${childList.map((c, i) => `
+              <tr>
+                <td><strong>${c.childName}</strong></td>
+                <td>${c.age} yrs</td>
+                <td>${c.gender}</td>
+                <td>${c.contact}</td>
+                <td><span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:100px;font-size:12px;font-weight:600;">${c.issue}</span></td>
+                <td style="display:flex;gap:6px;">
+                  <button onclick="editChild(${i})" style="padding:6px 12px;background:rgba(13,148,136,0.1);color:var(--teal);border:1px solid rgba(13,148,136,0.3);border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;">Edit</button>
+                  <button onclick="deleteChild(${i})" style="padding:6px 12px;background:rgba(239,68,68,0.1);color:#dc2626;border:1px solid rgba(239,68,68,0.3);border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;">Delete</button>
+                </td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function editChild(i) {
+      const c = childList[i];
+      document.getElementById('childName').value = c.childName;
+      document.getElementById('age').value = c.age;
+      document.getElementById('gender').value = c.gender;
+      document.getElementById('contact').value = c.contact;
+      document.getElementById('issue').value = c.issue;
+      editIndex = i;
+      document.getElementById('formTitle').textContent = 'Edit Child Profile';
+      document.getElementById('cancelBtn').hidden = false;
+    }
+    function deleteChild(i) {
+      if (confirm("Delete this child record?")) { childList.splice(i, 1); localStorage.setItem("childData", JSON.stringify(childList)); renderTable(); }
+    }
+    function clearForm() {
+      ['childName','age','contact','issue'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('gender').value = '';
+    }
+    function cancelEdit() {
+      editIndex = -1; clearForm();
+      document.getElementById('formTitle').textContent = 'Add Child Profile';
+      document.getElementById('cancelBtn').hidden = true;
+    }
+    renderTable();
+  </script>
+</body>
+</html>

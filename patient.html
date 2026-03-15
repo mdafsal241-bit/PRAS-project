@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRAS — Patients</title>
+  <link rel="stylesheet" href="css/shared.css">
+  <style>
+    .patient-layout { display: grid; grid-template-columns: 1fr 1.6fr; gap: 24px; }
+    .form-panel { background: var(--white); border-radius: 16px; padding: 28px; border: 1px solid #e2e8f0; }
+    .form-panel h3 { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 22px; }
+    .appt-panel { background: var(--white); border-radius: 16px; padding: 28px; border: 1px solid #e2e8f0; }
+    .appt-panel h3 { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 22px; }
+    .fg { margin-bottom: 16px; }
+    .fg label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 7px; }
+    .fg input, .fg select {
+      width: 100%; padding: 12px 14px;
+      border: 2px solid #e2e8f0; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--navy);
+      background: var(--light); outline: none; transition: all 0.25s;
+    }
+    .fg input:focus, .fg select:focus { border-color: var(--teal); background: var(--white); }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .btn-go { width: 100%; padding: 13px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--teal), #065f46); color: white; font-size: 15px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s; }
+    .btn-go:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13,148,136,0.35); }
+
+    .details-card {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border-radius: 14px; padding: 20px; margin-bottom: 20px;
+      border: 2px solid #bae6fd;
+    }
+    .details-card h4 { font-size: 13px; font-weight: 700; color: var(--teal); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(13,148,136,0.12); font-size: 14px; }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row .lbl { color: var(--gray); }
+    .detail-row .val { color: var(--navy); font-weight: 700; }
+
+    @media (max-width: 900px) { .patient-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><h2>PRAS <span></span> </h2><p>Health Monitoring System</p></div>
+    <nav class="nav-section">
+      <div class="nav-label">Main</div>
+      <a href="home.html" class="nav-item"><span class="icon">🏠</span> Dashboard</a>
+      <a href="doctor.html" class="nav-item"><span class="icon">👨‍⚕️</span> Doctors</a>
+      <a href="patient.html" class="nav-item active"><span class="icon">🧑</span> Patients</a>
+      <div class="nav-label">Services</div>
+      <a href="tablet.html" class="nav-item"><span class="icon">💊</span> Medicine Store</a>
+      <a href="bmi.html" class="nav-item"><span class="icon">⚖️</span> BMI Calculator</a>
+      <a href="child.html" class="nav-item"><span class="icon">👶</span> Child Health</a>
+      <div class="nav-label">Info</div>
+      <a href="about.html" class="nav-item"><span class="icon">ℹ️</span> About Us</a>
+      <a href="feedback.html" class="nav-item"><span class="icon">⭐</span> Reviews</a>
+      <a href="contact.html" class="nav-item"><span class="icon">📞</span> Contact</a>
+    </nav>
+    <div class="sidebar-bottom"><button class="logout-btn" onclick="window.location.href='index.html'">🚪 Sign Out</button></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <h3>Patient Registration</h3>
+      </div>
+      <div class="user-avatar">A</div>
+    </div>
+    <div class="content">
+      <div class="page-header">
+        <h2>Patient Management</h2>
+        <p>Register patients and book appointments</p>
+      </div>
+      <div class="patient-layout">
+        <div class="form-panel">
+          <h3>🧑 Patient Registration</h3>
+          <div class="row2">
+            <div class="fg"><label>Full Name</label><input type="text" id="pname" placeholder="Patient name"></div>
+            <div class="fg"><label>Age</label><input type="number" id="page" placeholder="Years"></div>
+          </div>
+          <div class="row2">
+            <div class="fg"><label>Gender</label>
+              <select id="pgender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select>
+            </div>
+            <div class="fg"><label>Contact Number</label><input type="text" id="pcontact" placeholder="+91 XXXXX XXXXX"></div>
+          </div>
+          <div class="fg"><label>Address</label><input type="text" id="paddress" placeholder="Patient address"></div>
+          <button class="btn-go" onclick="registerPatient()">Register Patient →</button>
+        </div>
+
+        <div class="appt-panel">
+          <h3>📅 Book Appointment</h3>
+          <div id="patientDetails" style="display:none;">
+            <div class="details-card">
+              <h4>Patient Profile</h4>
+              <div class="detail-row"><span class="lbl">Name</span><span class="val" id="dName">—</span></div>
+              <div class="detail-row"><span class="lbl">Age</span><span class="val" id="dAge">—</span></div>
+              <div class="detail-row"><span class="lbl">Gender</span><span class="val" id="dGender">—</span></div>
+              <div class="detail-row"><span class="lbl">Contact</span><span class="val" id="dContact">—</span></div>
+            </div>
+          </div>
+          <div class="fg"><label>Select Doctor</label>
+            <select id="adoctor">
+              <option value="">Choose a specialist</option>
+              <option>Dr. Afsal — General Practitioner</option>
+              <option>Dr. Arshad — Cardiologist</option>
+              <option>Dr. Abdullah — Dermatologist</option>
+              <option>Dr. Abdul khader — Pediatrician</option>
+              <option>Dr. Sumaiya — Orthopedic Surgeon</option>
+              <option>Dr. Anjurose — Gastroenterologist</option>
+            </select>
+          </div>
+          <div class="row2">
+            <div class="fg"><label>Appointment Date</label><input type="date" id="adate"></div>
+            <div class="fg"><label>Preferred Time</label>
+              <select id="atime">
+                <option value="">Select time</option>
+                <option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option>
+                <option>12:00 PM</option><option>02:00 PM</option><option>03:00 PM</option><option>04:00 PM</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label>Reason for Visit</label><input type="text" id="areason" placeholder="e.g. Routine checkup, Fever"></div>
+          <button class="btn-go" onclick="bookAppointment()">Book Appointment →</button>
+          <div id="apptSuccess" style="display:none;margin-top:16px;background:#d1fae5;border:2px solid #a7f3d0;border-radius:12px;padding:16px;text-align:center;color:#065f46;font-weight:700;font-size:15px;">
+            ✓ Appointment confirmed!
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>© 2026 Patient Registratin And Appoinment Scheduling</footer>
+  </div>
+  <script>
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+    let currentPatient = null;
+    function registerPatient() {
+      const name = document.getElementById('pname').value.trim();
+      const age = document.getElementById('page').value;
+      const gender = document.getElementById('pgender').value;
+      const contact = document.getElementById('pcontact').value.trim();
+      if (!name || !age || !gender || !contact) { alert('Please fill all patient details.'); return; }
+      currentPatient = { name, age, gender, contact };
+      document.getElementById('dName').textContent = name;
+      document.getElementById('dAge').textContent = age + ' years';
+      document.getElementById('dGender').textContent = gender;
+      document.getElementById('dContact').textContent = contact;
+      document.getElementById('patientDetails').style.display = 'block';
+      alert('Patient registered! Now book an appointment below.');
+    }
+    function bookAppointment() {
+      if (!currentPatient) { alert('Please register a patient first.'); return; }
+      const doc = document.getElementById('adoctor').value;
+      const date = document.getElementById('adate').value;
+      const time = document.getElementById('atime').value;
+      if (!doc || !date || !time) { alert('Please fill all appointment details.'); return; }
+      document.getElementById('apptSuccess').style.display = 'block';
+      document.getElementById('apptSuccess').textContent = `✓ Appointment booked with ${doc} on ${date} at ${time}`;
+      setTimeout(() => document.getElementById('apptSuccess').style.display = 'none', 5000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRAS — Reviews</title>
+  <link rel="stylesheet" href="css/shared.css">
+  <style>
+    .feedback-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; }
+    .feedback-form-card { background: var(--white); border-radius: 20px; padding: 36px; border: 1px solid #e2e8f0; }
+    .feedback-form-card h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--navy); margin-bottom: 24px; }
+    .fg { margin-bottom: 18px; }
+    .fg label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 7px; }
+    .fg input, .fg select, .fg textarea {
+      width: 100%; padding: 12px 14px;
+      border: 2px solid #e2e8f0; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--navy);
+      background: var(--light); outline: none; transition: all 0.25s; resize: vertical;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--teal); background: var(--white); box-shadow: 0 0 0 4px rgba(13,148,136,0.1); }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .emoji-section { margin-bottom: 20px; }
+    .emoji-section label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 10px; }
+    .emoji-row { display: flex; gap: 12px; }
+    .emoji-btn {
+      font-size: 32px; background: var(--light); border: 2px solid #e2e8f0;
+      border-radius: 12px; padding: 10px 14px; cursor: pointer; transition: all 0.25s;
+    }
+    .emoji-btn:hover, .emoji-btn.selected { transform: scale(1.15); border-color: var(--teal); background: rgba(13,148,136,0.1); }
+    .emoji-response { font-size: 15px; color: var(--teal); font-weight: 600; min-height: 24px; margin-top: 10px; }
+
+    .btn-submit {
+      width: 100%; padding: 15px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--teal), #065f46);
+      color: white; font-size: 16px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13,148,136,0.35); }
+    .success-msg { display:none; text-align: center; padding: 24px; }
+    .success-msg .icon { font-size: 52px; margin-bottom: 12px; }
+    .success-msg h4 { color: var(--teal); font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .success-msg p { color: var(--gray); font-size: 14px; }
+
+    .reviews-panel { background: var(--white); border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; }
+    .reviews-panel .rp-header { padding: 24px 28px; border-bottom: 1px solid #f1f5f9; }
+    .reviews-panel .rp-header h3 { font-size: 17px; font-weight: 700; color: var(--navy); }
+    .review-item { padding: 20px 28px; border-bottom: 1px solid #f8fafc; }
+    .review-item:last-child { border-bottom: none; }
+    .review-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .review-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), #065f46);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 13px; flex-shrink: 0;
+    }
+    .review-meta h5 { font-size: 14px; font-weight: 700; color: var(--navy); }
+    .review-meta small { color: var(--gray); font-size: 12px; margin-left: auto; }
+    .review-stars { color: #f59e0b; font-size: 13px; margin-bottom: 6px; }
+    .review-text { color: #475569; font-size: 14px; line-height: 1.6; }
+
+    @media (max-width: 900px) { .feedback-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><h2>PRAS <span></span> </h2><p>Health Monitoring System</p></div>
+    <nav class="nav-section">
+      <div class="nav-label">Main</div>
+      <a href="home.html" class="nav-item"><span class="icon">🏠</span> Dashboard</a>
+      <a href="doctor.html" class="nav-item"><span class="icon">👨‍⚕️</span> Doctors</a>
+      <a href="patient.html" class="nav-item"><span class="icon">🧑‍🦽</span> Patients</a>
+      <div class="nav-label">Services</div>
+      <a href="tablet.html" class="nav-item"><span class="icon">💊</span> Medicine Store</a>
+      <a href="bmi.html" class="nav-item"><span class="icon">⚖️</span> BMI Calculator</a>
+      <a href="child.html" class="nav-item"><span class="icon">👶</span> Child Health</a>
+      <div class="nav-label">Info</div>
+      <a href="about.html" class="nav-item"><span class="icon">ℹ️</span> About Us</a>
+      <a href="feedback.html" class="nav-item active"><span class="icon">⭐</span> Reviews</a>
+      <a href="contact.html" class="nav-item"><span class="icon">📞</span> Contact</a>
+    </nav>
+    <div class="sidebar-bottom"><button class="logout-btn" onclick="window.location.href='index.html'">🚪 Sign Out</button></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <h3>Patient Reviews</h3>
+      </div>
+      <div class="user-avatar">A</div>
+    </div>
+    <div class="content">
+      <div class="page-header">
+        <h2>Share Your Experience</h2>
+        <p>Your feedback helps us improve our care and services</p>
+      </div>
+      <div class="feedback-layout">
+        <div class="feedback-form-card">
+          <h3>Write a Review</h3>
+          <div id="feedbackForm">
+            <div class="row2">
+              <div class="fg"><label>Full Name</label><input type="text" id="fname" placeholder="Your name"></div>
+              <div class="fg"><label>Email</label><input type="email" id="femail" placeholder="your@email.com"></div>
+            </div>
+            <div class="emoji-section">
+              <label>Quick Reaction</label>
+              <div class="emoji-row">
+                <button class="emoji-btn" type="button" onclick="selectEmoji(this,'😀')">😀</button>
+                <button class="emoji-btn" type="button" onclick="selectEmoji(this,'🙂')">🙂</button>
+                <button class="emoji-btn" type="button" onclick="selectEmoji(this,'😐')">😐</button>
+                <button class="emoji-btn" type="button" onclick="selectEmoji(this,'😞')">😞</button>
+                <button class="emoji-btn" type="button" onclick="selectEmoji(this,'😡')">😡</button>
+              </div>
+              <div class="emoji-response" id="emojiResponse"></div>
+            </div>
+            <div class="fg">
+              <label>Rating</label>
+              <select id="frating">
+                <option value="">Select rating</option>
+                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                <option value="4">⭐⭐⭐⭐ Very Good</option>
+                <option value="3">⭐⭐⭐ Good</option>
+                <option value="2">⭐⭐ Fair</option>
+                <option value="1">⭐ Poor</option>
+              </select>
+            </div>
+            <div class="fg"><label>Your Feedback</label><textarea id="ffeedback" rows="4" placeholder="Share your experience with us..."></textarea></div>
+            <button class="btn-submit" onclick="submitFeedback()">Submit Review →</button>
+          </div>
+          <div class="success-msg" id="successMsg">
+            <div class="icon">🎉</div>
+            <h4>Thank You!</h4>
+            <p>Your feedback has been received. We appreciate you taking the time to help us improve.</p>
+          </div>
+        </div>
+
+        <div class="reviews-panel">
+          <div class="rp-header"><h3>Recent Patient Reviews</h3></div>
+          <div class="review-item">
+            <div class="review-meta">
+              <div class="review-avatar">R</div>
+              <h5>Ravi Kumar</h5><small>2 days ago</small>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">Exceptional care from the entire team. Dr. Faizan was thorough and compassionate. The hospital is clean and well-organised.</p>
+          </div>
+          <div class="review-item">
+            <div class="review-meta">
+              <div class="review-avatar" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);">P</div>
+              <h5>Priya Nair</h5><small>5 days ago</small>
+            </div>
+            <div class="review-stars">★★★★☆</div>
+            <p class="review-text">Quick appointment booking and friendly staff. The pediatric department was especially wonderful with my child.</p>
+          </div>
+          <div class="review-item">
+            <div class="review-meta">
+              <div class="review-avatar" style="background:linear-gradient(135deg,#ea580c,#7c2d12);">A</div>
+              <h5>Anbu Selvan</h5><small>1 week ago</small>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">The  system made everything seamless during an emergency. Highly professional team, prompt response.</p>
+          </div>
+          <div id="newReviews"></div>
+        </div>
+      </div>
+    </div>
+    <footer>© 2026 Patient Registratin And Appoinment Scheduling</footer>
+  </div>
+  <script>
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+    let selectedEmoji = '';
+    function selectEmoji(btn, emoji) {
+      document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedEmoji = emoji;
+      const msgs = { '😀': 'Glad you had a great experience!', '🙂': 'Thanks for the positive feedback!', '😐': 'We\'d love to know how we can improve.', '😞': 'Sorry to hear that. We\'ll do better.', '😡': 'We sincerely apologise. Your concern will be addressed.' };
+      document.getElementById('emojiResponse').textContent = msgs[emoji] || '';
+    }
+    function submitFeedback() {
+      const name = document.getElementById('fname').value.trim();
+      const email = document.getElementById('femail').value.trim();
+      const rating = document.getElementById('frating').value;
+      const feedback = document.getElementById('ffeedback').value.trim();
+      if (!name || !email || !rating || !feedback) { alert('Please fill in all fields.'); return; }
+      const stars = '★'.repeat(parseInt(rating)) + '☆'.repeat(5 - parseInt(rating));
+      document.getElementById('newReviews').innerHTML += `
+        <div class="review-item">
+          <div class="review-meta">
+            <div class="review-avatar">${name[0].toUpperCase()}</div>
+            <h5>${name}</h5><small>Just now</small>
+          </div>
+          <div class="review-stars">${stars}</div>
+          <p class="review-text">${feedback}</p>
+        </div>`;
+      document.getElementById('feedbackForm').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

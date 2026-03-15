@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRAS — Medicine Store</title>
+  <link rel="stylesheet" href="css/shared.css">
+  <style>
+    .store-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+    .search-bar { display: flex; align-items: center; gap: 0; background: var(--white); border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden; flex: 1; max-width: 440px; transition: all 0.25s; }
+    .search-bar:focus-within { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(13,148,136,0.1); }
+    .search-bar input { flex: 1; padding: 13px 18px; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; background: transparent; }
+    .search-bar .search-icon { padding: 0 16px; font-size: 18px; color: var(--gray); }
+    .cart-btn {
+      display: flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--teal), #065f46);
+      color: white; border: none; border-radius: 12px;
+      padding: 13px 22px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: all 0.3s; position: relative;
+    }
+    .cart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13,148,136,0.35); }
+    .cart-count { background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+
+    .meds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+    .med-card {
+      background: var(--white); border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; transition: all 0.3s;
+    }
+    .med-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); border-color: var(--teal); }
+    .med-img {
+      height: 160px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      display: flex; align-items: center; justify-content: center; font-size: 56px;
+    }
+    .med-body { padding: 18px; }
+    .med-name { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .med-desc { font-size: 12px; color: var(--gray); margin-bottom: 14px; line-height: 1.5; }
+    .med-footer { display: flex; align-items: center; justify-content: space-between; }
+    .med-price { font-size: 20px; font-weight: 800; color: var(--teal); font-family: 'Playfair Display', serif; }
+    .med-btns { display: flex; gap: 8px; }
+    .btn-add { padding: 8px 16px; background: rgba(13,148,136,0.1); color: var(--teal); border: 1px solid rgba(13,148,136,0.3); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.25s; }
+    .btn-add:hover { background: var(--teal); color: white; }
+    .btn-buy { padding: 8px 16px; background: linear-gradient(135deg, #16a34a, #065f46); color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.25s; }
+    .btn-buy:hover { transform: scale(1.05); }
+
+    /* CART DRAWER */
+    .cart-drawer {
+      position: fixed; right: 0; top: 0; bottom: 0; width: 360px;
+      background: var(--white); box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+      z-index: 200; display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform 0.35s ease;
+    }
+    .cart-drawer.open { transform: translateX(0); }
+    .cart-drawer-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+    .cart-drawer-header h3 { font-size: 18px; font-weight: 700; color: var(--navy); }
+    .close-cart { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray); }
+    .cart-items { flex: 1; overflow-y: auto; padding: 16px; }
+    .cart-empty { padding: 50px 20px; text-align: center; color: var(--gray); }
+    .cart-empty .icon { font-size: 48px; opacity: 0.4; margin-bottom: 12px; }
+    .cart-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--light); border-radius: 10px; margin-bottom: 10px; }
+    .cart-item-icon { font-size: 28px; flex-shrink: 0; }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+    .cart-item-price { font-size: 14px; font-weight: 700; color: var(--teal); }
+    .cart-remove { background: none; border: none; color: var(--error); font-size: 16px; cursor: pointer; padding: 4px; }
+    .cart-footer { padding: 20px 24px; border-top: 1px solid #e2e8f0; }
+    .cart-total { display: flex; justify-content: space-between; margin-bottom: 16px; }
+    .cart-total span { font-size: 14px; color: var(--gray); }
+    .cart-total strong { font-size: 20px; font-weight: 800; color: var(--navy); font-family: 'Playfair Display', serif; }
+    .btn-checkout { width: 100%; padding: 15px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--teal), #065f46); color: white; font-size: 16px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s; }
+    .btn-checkout:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13,148,136,0.35); }
+
+    /* Success toast */
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--navy); color: white; padding: 14px 24px; border-radius: 100px; font-size: 14px; font-weight: 600; z-index: 300; transition: transform 0.4s; border: 1px solid rgba(13,148,136,0.4); }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <div class="overlay" id="cartOverlay" style="z-index:150;" onclick="toggleCart()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><h2>PRAS <span></span> </h2><p>Health Monitoring System</p></div>
+    <nav class="nav-section">
+      <div class="nav-label">Main</div>
+      <a href="home.html" class="nav-item"><span class="icon">🏠</span> Dashboard</a>
+      <a href="doctor.html" class="nav-item"><span class="icon">👨‍⚕️</span> Doctors</a>
+      <a href="patient.html" class="nav-item"><span class="icon">🧑‍🦽</span> Patients</a>
+      <div class="nav-label">Services</div>
+      <a href="tablet.html" class="nav-item active"><span class="icon">💊</span> Medicine Store</a>
+      <a href="bmi.html" class="nav-item"><span class="icon">⚖️</span> BMI Calculator</a>
+      <a href="child.html" class="nav-item"><span class="icon">👶</span> Child Health</a>
+      <div class="nav-label">Info</div>
+      <a href="about.html" class="nav-item"><span class="icon">ℹ️</span> About Us</a>
+      <a href="feedback.html" class="nav-item"><span class="icon">⭐</span> Reviews</a>
+      <a href="contact.html" class="nav-item"><span class="icon">📞</span> Contact</a>
+    </nav>
+    <div class="sidebar-bottom"><button class="logout-btn" onclick="window.location.href='index.html'">🚪 Sign Out</button></div>
+  </aside>
+
+  <!-- CART DRAWER -->
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <h3>🛒 Your Cart</h3>
+      <button class="close-cart" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty"><div class="icon">🛒</div><p>Your cart is empty</p></div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total"><span>Total</span><strong id="cartTotal">₹0</strong></div>
+      <button class="btn-checkout" onclick="checkout()">Proceed to Checkout →</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <h3>Medicine Store</h3>
+      </div>
+      <div class="user-avatar">A</div>
+    </div>
+    <div class="content">
+      <div class="store-header">
+        <div>
+          <div class="page-header" style="margin-bottom:0"><h2>Online Pharmacy</h2><p>Order medicines online — delivered with care</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="search-bar"><span class="search-icon">🔍</span><input type="text" id="searchText" placeholder="Search medicines..." oninput="filterMeds()"></div>
+          <button class="cart-btn" onclick="toggleCart()">🛒 Cart <span class="cart-count" id="cartCount">0</span></button>
+        </div>
+      </div>
+
+      <div class="meds-grid" id="medsGrid">
+        <!-- Medicines injected by JS -->
+      </div>
+    </div>
+    <footer>© 2026 Patient Registratin And Appoinment Scheduling</footer>
+  </div>
+
+  <script>
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+    const medicines = [
+      { id:1, name:'Dolo-650 Tablet', desc:'Paracetamol for fever & mild pain relief', price:99, icon:'💊' },
+      { id:2, name:'Moxikind-CV Kid', desc:'Amoxicillin antibiotic for children', price:99, icon:'💊' },
+      { id:3, name:'Ibuprofen-400', desc:'Anti-inflammatory pain relief tablet', price:99, icon:'💊' },
+      { id:4, name:'Montair LC Kid', desc:'Levocetirizine for allergy relief', price:99, icon:'💊' },
+      { id:5, name:'Paracetamol-500', desc:'Standard paracetamol for adults', price:109, icon:'💊' },
+      { id:6, name:'Levocetirizine', desc:'Antihistamine for hay fever & urticaria', price:149, icon:'💊' },
+      { id:7, name:'CTD-12.5 Tablet', desc:'Chlorthalidone for blood pressure control', price:149, icon:'💊' },
+      { id:8, name:'Rex Baby Tonic 100ml', desc:'Nutritional supplement for infants', price:69, icon:'💊' },
+      { id:9, name:'SBL Nixocid Tabs 25g', desc:'Homeopathic antacid for stomach relief', price:104, icon:'💊' },
+    ];
+
+    let cart = [];
+    let filteredMeds = [...medicines];
+
+    function renderMeds() {
+      document.getElementById('medsGrid').innerHTML = filteredMeds.length === 0
+        ? '<p style="color:var(--gray);grid-column:1/-1;text-align:center;padding:40px;">No medicines found.</p>'
+        : filteredMeds.map(m => `
+          <div class="med-card">
+            <div class="med-img">${m.icon}</div>
+            <div class="med-body">
+              <div class="med-name">${m.name}</div>
+              <div class="med-desc">${m.desc}</div>
+              <div class="med-footer">
+                <div class="med-price">₹${m.price}</div>
+                <div class="med-btns">
+                  <button class="btn-add" onclick="addToCart(${m.id})">+ Cart</button>
+                  <button class="btn-buy" onclick="buyNow(${m.id})">Buy</button>
+                </div>
+              </div>
+            </div>
+          </div>`).join('');
+    }
+
+    function filterMeds() {
+      const q = document.getElementById('searchText').value.toLowerCase();
+      filteredMeds = medicines.filter(m => m.name.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q));
+      renderMeds();
+    }
+
+    function addToCart(id) {
+      const med = medicines.find(m => m.id === id);
+      cart.push(med);
+      updateCart();
+      showToast(`✓ ${med.name} added to cart`);
+    }
+
+    function updateCart() {
+      document.getElementById('cartCount').textContent = cart.length;
+      const total = cart.reduce((s, m) => s + m.price, 0);
+      document.getElementById('cartTotal').textContent = '₹' + total;
+      document.getElementById('cartItems').innerHTML = cart.length === 0
+        ? '<div class="cart-empty"><div class="icon">🛒</div><p>Your cart is empty</p></div>'
+        : cart.map((m, i) => `
+          <div class="cart-item">
+            <div class="cart-item-icon">${m.icon}</div>
+            <div class="cart-item-info">
+              <div class="cart-item-name">${m.name}</div>
+              <div class="cart-item-price">₹${m.price}</div>
+            </div>
+            <button class="cart-remove" onclick="removeFromCart(${i})">🗑</button>
+          </div>`).join('');
+    }
+
+    function removeFromCart(i) { cart.splice(i, 1); updateCart(); }
+
+    function toggleCart() {
+      document.getElementById('cartDrawer').classList.toggle('open');
+      document.getElementById('cartOverlay').classList.toggle('show');
+    }
+
+    function buyNow(id) {
+      const med = medicines.find(m => m.id === id);
+      showToast(`✓ ${med.name} ordered successfully!`);
+    }
+
+    function checkout() {
+      if (cart.length === 0) { showToast('Your cart is empty'); return; }
+      showToast(`✓ Order placed! ${cart.length} items on the way.`);
+      cart = []; updateCart(); toggleCart();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    renderMeds();
+  </script>
+</body>
+</html>
